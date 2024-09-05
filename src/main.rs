@@ -1,7 +1,11 @@
 use clap::{Arg, Command};
 
+// Import RustyPlate from the new module
+mod rusty_plate;
+use crate::rusty_plate::RustyPlate;
+
 fn main() {
-    let matches = Command::new("RustyCookie")
+    let matches = Command::new("RustyPlate")
         .version("1.0")
         .about("Initialize projects from cookiecutter templates")
         .arg(
@@ -22,11 +26,20 @@ fn main() {
         )
         .get_matches();
 
-    // Use `get_one` instead of `value_of`
+    // Fetch the values of template and destination
     let template = matches.get_one::<String>("template").unwrap();
     let destination = matches.get_one::<String>("destination").unwrap();
 
     println!("Initializing project from template: {} at destination: {}", template, destination);
 
-    // Call the initialization logic here (placeholder for now)
+    // Create an instance of RustyPlate
+    let rusty_plate = RustyPlate {
+        template,
+        destination,
+    };
+
+    // Call the method on the RustyPlate instance
+    if let Err(e) = rusty_plate.initialize_project() {
+        eprintln!("Error initializing project: {}", e);
+    }
 }
