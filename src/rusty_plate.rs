@@ -39,3 +39,67 @@ impl<'a> RustyPlate<'a> {
         Ok(())
     }
 }
+
+// Unit tests module
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::fs::{self, File};
+    use std::io::Write;
+    use tempfile::tempdir;
+
+    #[test]
+    fn test_initialize_project_with_valid_template_p() {
+        // Create a temporary directory for the template and destination
+        let temp_dir = tempdir().unwrap();
+        let template_dir = temp_dir.path().join("template");
+        let destination_dir = temp_dir.path().join("destination");
+
+        // Create a mock template file
+        fs::create_dir_all(&template_dir).unwrap();
+        let template_file_path = template_dir.join("example.txt");
+        let mut file = File::create(&template_file_path).unwrap();
+        writeln!(file, "This is a test file").unwrap();
+
+        // Create an instance of RustyPlate
+        let rusty_plate = RustyPlate {
+            template: template_dir.to_str().unwrap(),
+            destination: destination_dir.to_str().unwrap(),
+        };
+
+        // Call the method and assert the result
+        let result = rusty_plate.initialize_project();
+        assert!(result.is_ok(), "Expected Ok but got an error: {:?}", result);
+
+        // Verify that the file was copied to the destination directory
+        let copied_file_path = destination_dir.join("example.txt");
+        assert!(copied_file_path.exists(), "File not copied to destination");
+
+        // Verify file contents
+        let contents = fs::read_to_string(copied_file_path).unwrap();
+        assert_eq!(contents, "This is a test file\n", "File contents mismatch");
+    }
+
+    #[test]
+    fn test_initialize_project_with_invalid_template_n() {
+        // Create a temporary directory for the destination
+        let temp_dir = tempdir().unwrap();
+        let destination_dir = temp_dir.path().join("destination");
+
+        // Non-existent template path
+        let non_existent_template = "non_existent_template";
+
+        // Create an instance of RustyPlate
+        let rusty_plate = RustyPlate {
+            template: non_existent_template,
+            destination: destination_dir.to_str().unwrap(),
+        };
+
+        // Call the method and assert the result
+        let result = rusty_plate.initialize_project();
+        assert!(result.is_ok());
+
+        // Since the template doesn't exist, no files should be created in the destination
+        assert!(fs::read_dir(&destination_dir).is_err());
+    }
+}
