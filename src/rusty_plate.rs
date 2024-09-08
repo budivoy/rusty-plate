@@ -1,6 +1,6 @@
 use std::fs;
-use std::path::Path;
 use std::io;
+use std::path::Path;
 
 // Define a struct to hold project information
 pub struct RustyPlate<'a> {

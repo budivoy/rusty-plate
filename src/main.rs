@@ -30,7 +30,10 @@ fn main() {
     let template = matches.get_one::<String>("template").unwrap();
     let destination = matches.get_one::<String>("destination").unwrap();
 
-    println!("Initializing project from template: {} at destination: {}", template, destination);
+    println!(
+        "Initializing project from template: {} at destination: {}",
+        template, destination
+    );
 
     // Create an instance of RustyPlate
     let rusty_plate = RustyPlate {
